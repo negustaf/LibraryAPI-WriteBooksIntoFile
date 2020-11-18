@@ -3,7 +3,7 @@
 # Your email: negustaf@umich.edu
 # List who you worked with on this homework: Maxton Fil
 
-# commit 5
+# commit 6
 
 from bs4 import BeautifulSoup
 import requests
@@ -115,12 +115,35 @@ def write_csv(data, filename):
 
 def extra_credit(filepath):
     """
-    EXTRA CREDIT
+    EXTRA CREDIT (15 Points)
+    
+    Sometimes when processing text data, it is useful to extract a list of people, places, and things that a document is about. This allows us to quickly tag documents by their content and can allow for faster search and retrieval, as well as providing a brief summary of the document's contents. In the field of Natural Language Processing, this task is called Named Entity Recognition (NER).
+    
+    These days, most NER is done using Artificial Intelligence. But, we can create a simple entity recognizer using Regex! Since English conveniently capitalizes proper nouns, we can use this to construct a regex pattern to easily grab many named entities from text.
+    
+    For the purposes of this assignment, we will define a named entity as follows:
+    - Named entities contain 2 or more capitalized words, with no lowercase words in-between them
+    - The words must be separated by spaces
+    - The first word must contain at least 3 letters
+    
+    Write a new function ​extra_credit()​ that takes a single ​filepath​ parameter. It should create a BeautifulSoup object from the filepath, given that ​filepath​ corresponds to the webpage for a book on Goodreads.com. Extract the description** of the book from the BeautifulSoup object and find all the named entities (using the criteria given above) within the book description. This function should return a list of all named entities present in the book description for the given ​filepath​. 
+    
+    Your list should be in the following format:
 
-    Please see the instructions document for more information on how to complete this function.
-    You do not have to write test cases for this function.
+    [‘Named Entity_1’, ‘Named Entity_2, .....]
+
+    You do not need to write any test cases for this function.
     """
-    pass
+    with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), filepath), 'r') as f:
+        file = f.read()
+    soup = BeautifulSoup(file, 'html.parser')
+    description = soup.find(id = 'freeText4791443123668479528').get_text(strip=True)
+    lst = []
+    NERs = re.findall(r'\b([A-Z][a-z]{2,}(?:\s+[A-Z](?:\w)*(?:\.[0-9])?){1,})\b', description)
+    for NER in NERs:
+        if 'For' not in NER:
+            lst.append(NER)
+    return lst
 
 def main():
     '''
@@ -251,5 +274,5 @@ class TestCases(unittest.TestCase):
 
 if __name__ == '__main__':
     main()
-    #print(extra_credit("extra_credit.htm"))
+    print(extra_credit("extra_credit.htm"))
     unittest.main(verbosity=2)
